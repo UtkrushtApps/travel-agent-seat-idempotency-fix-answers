@@ -1,0 +1,28 @@
+services:
+  seatdb:
+    image: postgres:16-alpine
+    container_name: travel_seat_idem_db
+    environment:
+      POSTGRES_USER: agent
+      POSTGRES_PASSWORD: agentpw
+      POSTGRES_DB: seatdb
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - travel_seat_idem_data:/var/lib/postgresql/data
+      - ./init_database.sql:/docker-entrypoint-initdb.d/init_database.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agent -d seatdb"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+    networks:
+      - travel_seat_idem_net
+
+volumes:
+  travel_seat_idem_data:
+    name: travel_seat_idem_data
+
+networks:
+  travel_seat_idem_net:
+    name: travel_seat_idem_net
